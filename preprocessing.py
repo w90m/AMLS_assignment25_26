@@ -42,11 +42,13 @@ def svm_pipeline1(X_train, y_train, X_val, y_val, X_test, y_test):
     X_val_raw   = X_val_raw.reshape(len(X_val_raw), -1)
     X_test_raw  = X_test_raw.reshape(len(X_test_raw), -1)
 
-    print(X_train_raw.shape)
+    #print(X_train_raw.shape)
+    return X_train_raw, X_val_raw, X_test_raw
+    
 
 
 
-def svm_pipeline2(X_train, y_train, X_val, y_val, X_test, y_test):
+def svm_pipeline2(X_train, y_train, X_val, y_val, X_test, y_test, n_components):
     #-----------------------------------------------------------------------
     # Pipeline 2 - Classical Model (SVM) with PCA Feature Extraction
     #-----------------------------------------------------------------------
@@ -67,6 +69,8 @@ def svm_pipeline2(X_train, y_train, X_val, y_val, X_test, y_test):
     X_train_pca = pca.fit_transform(X_train_scaled)
     X_val_pca   = pca.transform(X_val_scaled)
     X_test_pca  = pca.transform(X_test_scaled)
+
+    return X_train_pca, X_val_pca, X_test_pca
 
 
 #convert dataset to NumPy - for SVM
