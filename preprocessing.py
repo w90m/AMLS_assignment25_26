@@ -85,32 +85,7 @@ def dataset_to_numpy(dataset):
     
     return np.array(images), np.array(labels).ravel()
 
-def cnn_dataset(train_dataset, val_dataset, test_dataset):
-    # ----------------------------------------------------
-    # Training transform WITH augmentation (Phase 3)
-    # ----------------------------------------------------
-    train_transform = transforms.Compose([
-        transforms.RandomRotation(degrees=15),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2),
-        transforms.ToTensor(),              # [0,1] + channel dim
-        gaussian_noise.AddGaussianNoise(std=0.05)
-    ])
 
-    # ----------------------------------------------------
-    # Validation / Test transform (NO augmentation)
-    # ----------------------------------------------------
-    test_transform = transforms.Compose([
-        transforms.ToTensor()
-    ])
-
-    # Assign transforms
-    train_dataset.transform = train_transform
-    val_dataset.transform   = test_transform
-    test_dataset.transform  = test_transform
-
-    # Sanity check
-    sample_img, sample_label = train_dataset[0]
-    print(f"Transformed image shape: {sample_img.shape}")
 
 
 
