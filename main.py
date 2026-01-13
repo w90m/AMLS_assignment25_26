@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, classification_report
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
 
-import preprocessing, train
+import preprocessing, train, visualize_img
 
 import random
 import numpy as np
@@ -36,6 +36,7 @@ def main():
 
     set_seed(42)
 
+
     #----------------------------
     # Data preparation
     #----------------------------
@@ -43,6 +44,10 @@ def main():
     train_dataset, val_dataset, test_dataset = preprocessing.acquire_dataset()
     X_train, y_train, X_val, y_val, X_test, y_test = preprocessing.train_val_test(train_dataset, val_dataset, test_dataset)
 
+    #----------------------------
+    # Visualize images 
+    #----------------------------
+    visualize_img.visualize(test_dataset)
     
     
     #------------------------------------------
@@ -243,23 +248,24 @@ def main():
     # CNN section 
     #------------------------------------------------------------------
     
-    #train_loader, val_loader, test_loader = train.get_dataloaders(train_dataset, val_dataset, test_dataset, augment=False)
+    train_loader, val_loader, test_loader = train.get_dataloaders(train_dataset, val_dataset, test_dataset, augment=False)
 
     # -------------------------------------------------
     # CNN Capacity × Training Budget
     # -------------------------------------------------
-    """
+    
     results_to_plot = {}
 
     for model_type in ["Simple CNN", "Deep CNN"]:
         print(f"Training {model_type}...")
         model = train.get_cnn_model(model_type)
         # Use the modified train_cnn that returns history
-        trained_model, history = train.train_cnn(model, train_loader, val_loader, epochs=50)
+        trained_model, history = train.train_cnn(model, train_loader, val_loader, epochs=200)
         results_to_plot[model_type] = history
+        simple_deep_report(trained_model,test_loader )
 
     plot_learning_curves(results_to_plot)
-    """
+    
 
     # -------------------------------------------------
     # CNN Adding Augmentation
@@ -328,6 +334,51 @@ def plot_learning_curves_aug(all_results):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+
+def simple_deep_report(model, test_loader, device='cpu'):
+    model.eval()
+    all_preds = []
+    all_labels = []
+    all_probs = [] 
+    
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images = images.to(device)
+            labels = labels.view(-1).long()
+            
+            outputs = model(images)
+            probs = F.softmax(outputs, dim=1)
+            _, predicted = torch.max(outputs, 1)
+            
+            all_preds.extend(predicted.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
+            all_probs.extend(probs[:, 1].cpu().numpy())
+    
+    target_names = ['Class 0 (Benign)', 'Class 1 (Malignant)']
+    
+    # Text Report
+    print("\n" + "="*30)
+    print(f"      Simple CNN vs Deep CNN REPORT ")
+    print("="*30)
+
+    # 1. Standard Metrics
+    acc = accuracy_score(all_labels, all_preds)
+    prec = precision_score(all_labels, all_preds)
+    rec = recall_score(all_labels, all_preds)
+    f1 = f1_score(all_labels, all_preds)
+
+    print(f"Accuracy : {acc:.3f}")
+    print(f"Precision: {prec:.3f}")
+    print(f"Recall   : {rec:.3f}")
+    print(f"F1-score : {f1:.3f}")
+
+
+    print(classification_report(all_labels, all_preds, target_names=target_names))
+    
+    
+    return all_labels, all_preds, all_probs
+
 
 def generate_final_report(model, test_loader, title, device='cpu'):
     model.eval()
