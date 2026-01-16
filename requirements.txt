@@ -2,3 +2,7 @@ medmnist
 scikit-learn
 torch
 torchvision
+matplotlib
+numpy
+sys
+os
