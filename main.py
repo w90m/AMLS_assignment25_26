@@ -464,14 +464,6 @@ def generate_final_report(model, test_loader, title, device='cpu'):
 
 
 
-
-
-
-
-
-
-
-
 def generate_final_report2(model, test_loader, title, device='cpu'):
     model.eval()
     all_preds = []
@@ -520,106 +512,6 @@ def generate_final_report2(model, test_loader, title, device='cpu'):
     return all_labels, all_preds
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    """
-    configs = [
-        ("simple", 5, False),
-        ("simple", 10, False),
-        ("simple", 25, False),
-        ("deep",   5, False),
-        ("deep",   10, False),
-        ("deep",   25, False),
-    ]
-
-    results = {}
-    
-    for train_cnn3
-    for model_type, epochs, early_stop in configs:
-        print(f"\nTraining {model_type.upper()} CNN | epochs={epochs} | early_stop={early_stop}")
-
-        model = train.get_cnn_model(model_type)
-
-        lr = 0.001 
-
-        trained_model = train.train_cnn(
-            model,
-            train_loader,
-            val_loader,
-            epochs=epochs,
-            lr = lr,
-            early_stopping=early_stop
-        )
-
-        val_acc = train.evaluate_cnn(trained_model, val_loader)
-        results[(model_type, epochs, early_stop)] = val_acc
-
-        """
-
-
-
-
-
-def plot_phase4_results(results):
-    """
-    Plots validation accuracy vs epochs for Simple and Deep CNNs.
-    Automatically handles missing keys in results.
-    """
-    models = ["simple", "deep"]
-
-    # gather all unique epochs actually stored
-    all_epochs = sorted(list(set([key[1] for key in results.keys()])))
-    
-    plt.figure(figsize=(8,6))
-
-    for model in models:
-        val_accs = []
-        epochs_used = []
-        for epochs in all_epochs:
-            # try False first, else take whatever is in results
-            key = (model, epochs, False)
-            if key in results:
-                val_acc = results[key]
-            else:
-                # fallback: pick any key with this model and epoch
-                matching_keys = [k for k in results if k[0]==model and k[1]==epochs]
-                if matching_keys:
-                    val_acc = results[matching_keys[0]]
-                else:
-                    continue  # skip if nothing found
-            val_accs.append(val_acc)
-            epochs_used.append(epochs)
-
-        plt.plot(epochs_used, val_accs, marker='o', label=f"{model.capitalize()} CNN")
-    
-    plt.xlabel("Training Budget (Epochs)")
-    plt.ylabel("Validation Accuracy")
-    plt.title("Phase 4: CNN Capacity vs Training Budget")
-    plt.xticks(all_epochs)
-    plt.ylim(0.5, 1.0)
-    plt.grid(True)
-    plt.legend()
-    plt.show()
 
 
 
