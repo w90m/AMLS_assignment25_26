@@ -14,7 +14,12 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, classification_report
 from sklearn.metrics import RocCurveDisplay, PrecisionRecallDisplay
 
-import preprocessing, train, visualize_img
+
+
+from Code.Model_A_SVM import preprocessing
+from Code.Model_B_CNN import train, gaussian_noise, svm_analysis, visualize_img
+
+
 
 import random
 import numpy as np
@@ -53,6 +58,8 @@ def main():
     #------------------------------------------
     # SVM training - for hyperparameter tuning
     #------------------------------------------
+  
+    
     C_values = [0.1, 1, 10]
     kernels = ["linear", "rbf"]
 
@@ -257,6 +264,7 @@ def main():
     results_to_plot = {}
 
     for model_type in ["Simple CNN", "Deep CNN"]:
+        set_seed(42)
         print(f"Training {model_type}...")
         model = train.get_cnn_model(model_type)
         # Use the modified train_cnn that returns history
@@ -277,6 +285,7 @@ def main():
     aug_list = [False, True]
     
     for aug in aug_list:
+        set_seed(42)
         status = "With" if aug else "No"
         print(f"\n>>> Training Deep CNN {status} Augmentation...")
         
